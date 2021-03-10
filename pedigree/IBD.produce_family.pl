@@ -45,7 +45,7 @@ A: while (<IN>){
 			$clone{"0"}{$a[1]}=0;
 			next A;
 		}
-		my $sw=0;
+		my $sw=0; #switch
 		B: for my $f (keys %clone){
 			if (exists $clone{$f}{$a[0]} or exists $clone{$f}{$a[1]}){
 				 $clone{$f}{$a[0]}=0;
@@ -64,17 +64,54 @@ A: while (<IN>){
 
 close IN;
 
-open OUT ,">family_info";
-print OUT "Family_ID\tSamp\tPop\tColour\n";
+
+
+
+my %pop_r=%pop;
+my $f_r=0;
+
+my %res;
+
 for my $f (sort {$a<=>$b} keys %clone){
 	for my $s (sort {$a cmp $b} keys %{$clone{$f}}){
 
-		my $p=$pop{uc($s)};
+		$s=uc($s);
+		my $p=$pop{$s};
 		my $c=$color{$p};
-		print OUT "$f\t$s\t$p\t$c\n";
+		delete $pop_r{$s};
+		$f_r=$f if  $f_r < $f;
+		$res{$p}{$f}{$s}=0;
+
+		#print OUT "$f\t$s\t$p\t$c\n";
 	}
 }
+
+for my $s (sort {$a cmp $b} keys %pop_r){
+	$f_r++;
+	$s=uc($s);
+	my $p=$pop{$s};
+	my $c=$color{$p};
+	$res{$p}{$f_r}{$s}=0;
+
+}
+
+open OUT, ">family_info.txt";
+print OUT "Family_ID\tSample_ID\tPopulation\tColour\n";
+
+for my $p ("AME","ASIA","EUR","IND"){
+	for my $f (sort {$a <=> $b} keys %{$res{$p}}){
+		for my $s (sort {$a cmp $b} keys %{$res{$p}{$f}}){
+			my $c=$color{$p};
+			print OUT "$f\t$s\t$p\t$c\n";
+		}
+	}
+}
+
 close OUT;
+
+# `sort -k3 -k1n family_info`;
+# `cat family_info.head family_info > family_info.txt`;
+# `rm family_info.head family_info`;
 
 __END__
 /home/wangyz/sciebo/PopulationGenomics_duckweed/pedigree/count_het_hom/hom_het_count.csv
