@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use Array::Utils qw(:all);
 
 die "perl $0 \n" if (@ARGV !=1);
 
@@ -31,6 +32,7 @@ my %clone;
 
 open IN, "<$ARGV[0]";
 
+my @cluster;
 my $family_n=0;
 A: while (<IN>){
 	chomp;
@@ -40,31 +42,39 @@ A: while (<IN>){
 	my $hom=$a[3]/$a[2];
 	if ($het <=  $het_diff and $hom <=  $hom_diff){
 
-		if (! exists $clone{"0"}){
-			$clone{"0"}{$a[0]}=0;
-			$clone{"0"}{$a[1]}=0;
-			next A;
-		}
-		my $sw=0; #switch
-		B: for my $f (keys %clone){
-			if (exists $clone{$f}{$a[0]} or exists $clone{$f}{$a[1]}){
-				 $clone{$f}{$a[0]}=0;
-				 $clone{$f}{$a[1]}=0;
-				 $sw=1;
-				 last B;
-			} 
-		}
-		if ($sw == 0){
-			$family_n++;
-			$clone{$family_n}{$a[0]}=0;
-			$clone{$family_n}{$a[1]}=0;
-		}
+		# if (! exists $clone{"0"}){
+		# 	$clone{"0"}{$a[0]}=0;
+		# 	$clone{"0"}{$a[1]}=0;
+		# 	next A;
+		# }
+		# my $sw=0; #switch
+		# B: for my $f (keys %clone){
+		# 	if (exists $clone{$f}{$a[0]} or exists $clone{$f}{$a[1]}){
+		# 		 $clone{$f}{$a[0]}=0;
+		# 		 $clone{$f}{$a[1]}=0;
+		# 		 $sw=1;
+		# 		 last B;
+		# 	} 
+		# }
+		# if ($sw == 0){
+		# 	$family_n++;
+		# 	$clone{$family_n}{$a[0]}=0;
+		# 	$clone{$family_n}{$a[1]}=0;
+		# }
+		push  @cluster, [$a[0],$a[1]];
 	}
 }
 
 close IN;
 
 
+my @res=lineage_cluster(\@cluster);
+for my $i (0..$#res){
+	for my $j (@{$res[$i]}){
+		#delete $pop_r{uc($j)};
+		$clone{$i}{$j}=0;
+	}
+}
 
 
 my %pop_r=%pop;
@@ -109,10 +119,28 @@ for my $p ("AME","ASIA","EUR","IND"){
 
 close OUT;
 
-# `sort -k3 -k1n family_info`;
-# `cat family_info.head family_info > family_info.txt`;
-# `rm family_info.head family_info`;
 
-__END__
-/home/wangyz/sciebo/PopulationGenomics_duckweed/pedigree/count_het_hom/hom_het_count.csv
-/home/wangyz/sciebo/PopulationGenomics_duckweed/pedigree/count_het_hom/pop.list
+sub lineage_cluster{
+	my @in=@{$_[0]};
+	# print "@in\n";
+	# print "@{$in[0]}\n";
+	my @res;
+	while (@in>0){
+
+		A: while (1>0){
+			my $sw=0;
+			@in = grep defined, @in;
+			for my $i (1..$#in){
+				if (intersect(@{$in[0]}, @{$in[$i]})){
+					push @{$in[0]}, @{$in[$i]};
+					@{$in[0]}=unique(@{$in[0]});
+					delete $in[$i];
+					$sw++;
+				}
+			}
+			last A if $sw==0;
+		}
+		push @res, shift @in;
+	}
+	return @res;
+}
