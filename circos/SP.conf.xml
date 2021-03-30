@@ -1,0 +1,184 @@
+# MINIMUM CIRCOS CONFIGURATION 
+#
+# The 'hello world' Circos tutorial. Only required
+# configuration elements are included.
+#
+# Common optional elements are commented out.
+
+# Defines unit length for ideogram and tick spacing, referenced
+# using "u" prefix, e.g. 10u
+#chromosomes_units           = 1000000
+
+# Show all chromosomes in karyotype file. By default, this is
+# true. If you want to explicitly specify which chromosomes
+# to draw, set this to 'no' and use the 'chromosomes' parameter.
+# chromosomes_display_default = yes
+
+# Chromosome name, size and color definition
+karyotype = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/karyotype.SP.txt
+
+chromosomes_units = 1000000
+
+<<include ideogram.conf>>
+
+<<include ticks.conf>>
+
+<ideogram>
+
+#<spacing>
+# spacing between ideograms
+#default = 0.005r
+#</spacing>
+
+
+ <spacing>
+default = 0.005r
+	<pairwise ChrS20 ChrS01>
+	   # spacing between hsY and hs1 is 50x 0.1% of image
+	   spacing = 10r 
+	</pairwise>
+</spacing>
+
+
+
+
+# ideogram position, thickness and fill
+radius           = 0.90r
+thickness        = 50p
+fill             = no
+
+#stroke_thickness = 1
+#stroke_color     = black
+
+# ideogram labels
+# <<include ideogram.label.conf>>
+
+# ideogram cytogenetic bands, if defined in the karyotype file
+# <<include bands.conf>>
+
+</ideogram>
+
+# image size, background color, angular position
+# of first ideogram, transparency levels, output
+# file and directory
+#
+# it is best to include these parameters from etc/image.conf
+# and override any using param* syntax
+#
+# e.g.
+# <image>
+# <<include /home/wangyz/soft_pkg/circos-0.69-9/etc/image.conf>>
+# radius* = 500
+# </image>
+<image>
+<<include /home/wangyz/soft_pkg/circos-0.69-9/etc/image.conf>> # included from Circos distribution 
+</image>
+
+# RGB/HSV color definitions, color lists, location of fonts,
+# fill patterns
+<<include /home/wangyz/soft_pkg/circos-0.69-9/etc/colors_fonts_patterns.conf>> # included from Circos distribution
+
+# debugging, I/O an dother system parameters
+<<include /home/wangyz/soft_pkg/circos-0.69-9/etc/housekeeping.conf>> # included from Circos distribution
+
+# <ticks> blocks to define ticks, tick labels and grids
+#
+# requires that chromosomes_units be defined
+#
+# <<include ticks.conf>>
+
+
+<plots>
+
+# type    = heatmap
+
+# # default file for all tracks
+# file             = data/6/snp.number.1mb.txt
+
+# # a 9 color diverging spectral palette specified using a color list name
+# color  = spectral-9-div
+
+# # referenced via conf(plots,color_alt)
+# color_alt = black,spectral-8-div,grey
+
+# # or the reverse list
+# #color = spectral-9-div-rev
+
+# # or you can even combine lists
+# # color = ylorrd-9-seq-rev,ylgnbu-9-seq
+
+# stroke_thickness = 1
+# stroke_color     = black
+# min              = 1000
+# max              = 5000
+
+<plot>
+type    = heatmap
+#file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.sw100000.step10000.cir_heat
+file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.sw1000000.step100000.cir_heat
+# color list
+color   = spectral-7-div
+r1      = 0.95r
+r0      = 0.85r
+</plot>
+
+<plot>
+type      = line
+thickness = 4
+max_gap = 1u
+file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/SNP_dens/snp/ChrSALL.SNP.fa.sw100000.step10000.cir_scatter
+color   = vdblue
+#min     = 0
+#max     = 0.015
+r0      = 0.7r
+r1      = 0.8r
+
+fill_color = lblue
+
+#<backgrounds>
+#<background>
+#color     = vvlgreen
+#y0        = 0.006
+#</background>
+#<background>
+#color     = vvlred
+#y1        = 0.002
+#</background>
+#</backgrounds>
+
+<axes>
+<axis>
+color     = lgrey_a2
+thickness = 2
+spacing   = 0.25r
+</axis>
+</axes>
+
+
+</plot>
+
+<plot>
+type      = line
+thickness = 4
+max_gap = 1u
+file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/SNP_dens/indel/SP2.0.fa.sw100000.step10000.cir_scatter
+color   = vdgreen
+
+r0      = 0.55r
+r1      = 0.65r
+
+fill_color = lgreen
+
+
+<axes>
+<axis>
+color     = lgrey_a2
+thickness = 2
+spacing   = 0.25r
+</axis>
+</axes>
+
+
+</plot>
+</plots>
+
