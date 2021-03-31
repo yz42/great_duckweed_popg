@@ -115,7 +115,8 @@ fill             = no
 <plot>
 type    = heatmap
 #file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.sw100000.step10000.cir_heat
-file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.sw1000000.step100000.cir_heat
+#file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.sw1000000.step100000.cir_heat
+file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.bin100000.cir_heat
 # color list
 color   = spectral-7-div
 r1      = 0.95r
