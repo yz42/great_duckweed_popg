@@ -178,8 +178,23 @@ thickness = 2
 spacing   = 0.25r
 </axis>
 </axes>
-
-
 </plot>
+
+
+<plot>
+type             = scatter
+stroke_thickness = 1
+
+file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/pi/pi_out/piNpiS.ChrSALL.fa.sw100000.step10000.cir_scatter
+
+fill_color       = grey
+stroke_color     = black
+glyph            = circle
+glyph_size       = 10
+
+r0      = 0.4r
+r1      = 0.5r
+</plot>
+
 </plots>
 
