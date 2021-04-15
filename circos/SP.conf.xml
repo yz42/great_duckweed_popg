@@ -35,7 +35,7 @@ chromosomes_units = 1000000
 default = 0.005r
 	<pairwise ChrS20 ChrS01>
 	   # spacing between hsY and hs1 is 50x 0.1% of image
-	   spacing = 10r 
+	   spacing = 5r 
 	</pairwise>
 </spacing>
 
@@ -44,7 +44,7 @@ default = 0.005r
 
 # ideogram position, thickness and fill
 radius           = 0.90r
-thickness        = 50p
+thickness        = 10p
 fill             = no
 
 #stroke_thickness = 1
@@ -112,15 +112,72 @@ fill             = no
 # min              = 1000
 # max              = 5000
 
+
+<plot>
+type      = line
+thickness = 2
+max_gap = 1u
+file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/mapping_depth/SP2.0.fa.depth.sw100000.step10000.cir_scatter.log2
+color   = purple
+#fill_color       = vvlpurple
+min     = -5
+max     = -1
+r0      = 0.96r
+r1      = 0.99r
+orientation = out
+<backgrounds>
+<background>
+color = vvlpurple
+</background>
+</backgrounds>
+</plot>
+
+<plot>
+type      = line
+thickness = 2
+max_gap = 1u
+file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/ref/fa.count_N/SP2.0.fa.N_count.sliding_windows.res.fixed
+color   = orange
+#fill_color       = vlorange
+r0      = 0.92r
+r1      = 0.95r
+orientation = out
+<backgrounds>
+<background>
+color = vvlorange
+</background>
+</backgrounds>
+</plot>
+
+<plot>
+type      = line
+thickness = 2
+max_gap = 1u
+file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.sw100000.step10000.cir_scatter
+color   = red
+#fill_color       = vlred
+r0      = 0.88r
+r1      = 0.91r
+orientation = out
+<backgrounds>
+<background>
+color = vvlorange
+</background>
+</backgrounds>
+</plot>
+
+
 <plot>
 type    = heatmap
 #file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.sw100000.step10000.cir_heat
 #file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.sw1000000.step100000.cir_heat
 file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/gene_dens/SP2.0.fa.bin100000.cir_heat
 # color list
-color   = spectral-7-div
-r1      = 0.95r
-r0      = 0.85r
+#color   = spectral-7-div-rev
+color   = reds-6-seq
+r0      = 0.84r
+r1      = 0.87r
+
 </plot>
 
 <plot>
@@ -131,21 +188,11 @@ file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/SNP_dens/s
 color   = vdblue
 #min     = 0
 #max     = 0.015
-r0      = 0.7r
-r1      = 0.8r
+r0      = 0.72r
+r1      = 0.82r
 
 fill_color = lblue
-
-#<backgrounds>
-#<background>
-#color     = vvlgreen
-#y0        = 0.006
-#</background>
-#<background>
-#color     = vvlred
-#y1        = 0.002
-#</background>
-#</backgrounds>
+orientation = out
 
 <axes>
 <axis>
@@ -165,8 +212,8 @@ max_gap = 1u
 file    = /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/SNP_dens/indel/SP2.0.fa.sw100000.step10000.cir_scatter
 color   = vdgreen
 
-r0      = 0.55r
-r1      = 0.65r
+r0      = 0.6r
+r1      = 0.7r
 
 fill_color = lgreen
 
@@ -192,8 +239,8 @@ stroke_color     = black
 glyph            = circle
 glyph_size       = 10
 
-r0      = 0.4r
-r1      = 0.5r
+r0      = 0.48r
+r1      = 0.58r
 </plot>
 
 </plots>
