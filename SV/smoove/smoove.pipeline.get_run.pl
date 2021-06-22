@@ -25,7 +25,7 @@ while (<LIST>){
   print OUT "#! /bin/bash
 # smoove.00.call.$smp.sbatch
 
-#SBATCH --export=NONE               # Start with a clean environment
+#SBATCH --export=ALL               # Start with a clean environment
 #SBATCH --nodes=1                   # the number of nodes you want to reserve
 #SBATCH --ntasks-per-node=2        # the number of CPU cores per node
 #SBATCH --mem=8G                 # how much memory is needed per node (units can be: K, M, G, T)
@@ -47,7 +47,7 @@ module load  palma/2020b  GCC/10.2.0 Python/2.7.18  SAMtools/1.11  samblaster/0.
   print GENOTYPING "#! /bin/bash
 # smoove.02.genotyping.$smp.sbatch
 
-#SBATCH --export=NONE               # Start with a clean environment
+#SBATCH --export=ALL               # Start with a clean environment
 #SBATCH --nodes=1                   # the number of nodes you want to reserve
 #SBATCH --ntasks-per-node=2        # the number of CPU cores per node
 #SBATCH --mem=8G                 # how much memory is needed per node (units can be: K, M, G, T)
@@ -75,7 +75,7 @@ open MERGE, ">smoove.01.merge.sbatch";
 print MERGE "#! /bin/bash
 # smoove.01.merge.sbatch
 
-#SBATCH --export=NONE               # Start with a clean environment
+#SBATCH --export=ALL               # pass all the user environmental variables to the slurm script
 #SBATCH --nodes=1                   # the number of nodes you want to reserve
 #SBATCH --ntasks-per-node=4        # the number of CPU cores per node
 #SBATCH --mem=16G                 # how much memory is needed per node (units can be: K, M, G, T)
@@ -96,9 +96,9 @@ close MERGE;
 
 open JOINT, ">smoove.03.joint.sbatch";
 print JOINT "#! /bin/bash
-# smoove.01.merge.sbatch
+# smoove.03.joint.sbatch
 
-#SBATCH --export=NONE               # Start with a clean environment
+#SBATCH --export=ALL               # pass all the user environmental variables to the slurm script
 #SBATCH --nodes=1                   # the number of nodes you want to reserve
 #SBATCH --ntasks-per-node=4        # the number of CPU cores per node
 #SBATCH --mem=16G                 # how much memory is needed per node (units can be: K, M, G, T)
@@ -120,7 +120,7 @@ open ANNO, ">smoove.04.anno.sbatch";
 print ANNO "#! /bin/bash
 # smoove.04.anno.sbatch
 
-#SBATCH --export=NONE               # Start with a clean environment
+#SBATCH --export=ALL               # pass all the user environmental variables to the slurm script
 #SBATCH --nodes=1                   # the number of nodes you want to reserve
 #SBATCH --ntasks-per-node=4        # the number of CPU cores per node
 #SBATCH --mem=16G                 # how much memory is needed per node (units can be: K, M, G, T)
