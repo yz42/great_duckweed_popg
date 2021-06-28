@@ -40,4 +40,4 @@ module load palma/2020b  GCC/10.2.0
 \n";
 	close OUT;
 }
-close LIST
+close LIST;
