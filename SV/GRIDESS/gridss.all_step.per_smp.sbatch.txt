@@ -1,0 +1,52 @@
+#! /bin/bash
+
+# gridss.all_step.per_smp.sbatch
+
+#SBATCH --export=ALL               # Start with a clean environment
+#SBATCH --nodes=1                   # the number of nodes you want to reserve
+#SBATCH --ntasks-per-node=10      # the number of CPU cores per node
+#SBATCH --mem=36G                 # how much memory is needed per node (units can be: K, M, G, T)
+#SBATCH --partition=normal          # on which partition to submit the job
+#SBATCH --time=72:00:00             # the max wallclock time (time limit your job will run)
+#SBATCH --job-name=gridss.all_step       # the name of your job
+#SBATCH -o gridss.all_step_%A_%a.out # Standard output
+#SBATCH -e gridss.all_step_%A_%a.err # Standard error
+
+module load palma/2020b Java/11.0.2 GCC/10.2.0  OpenMPI/4.0.5 R/4.0.3 SAMtools/1.11
+
+
+FILES=($(cat RMDP.bam.list))
+NAME=($(cat RMDP.bam.list.basename))
+i=${FILES[$SLURM_ARRAY_TASK_ID]}
+j=${NAME[$SLURM_ARRAY_TASK_ID]}
+# j=$(basename $i .bam)
+# FILENAME=${j%%.*} 
+
+echo "file: $i"
+echo "sample: $j"
+echo "array ID: $SLURM_ARRAY_TASK_ID"
+
+/home/y/ywang1/soft/gridss/gridss \
+-s preprocess,assemble,call \
+-o /scratch/tmp/ywang1/01.duckweed/popgenomics/SV/GRIDESS/working/$j/$j.gridss.vcf \
+-a /scratch/tmp/ywang1/01.duckweed/popgenomics/SV/GRIDESS/working/$j/$j.gridss.assemble.bam \
+-r /scratch/tmp/ywang1/01.duckweed/popgenomics/ref/SP_combined.fasta \
+-t 8 \
+--jvmheap 32g \
+--workingdir /scratch/tmp/ywang1/01.duckweed/popgenomics/SV/GRIDESS/working/$j/ \
+-j /home/y/ywang1/soft/gridss/gridss-2.12.0-gridss-jar-with-dependencies.jar \
+$i
+
+
+
+FILES=($(cat RMDP.bam.list))
+# get size of array
+NUMFASTQ=${#FILES[@]}
+# now subtract 1 as we have to use zero-based indexing (first cell is 0)
+ZBNUMFASTQ=$(($NUMFASTQ - 1))
+# now submit to SLURM
+if [ $ZBNUMFASTQ -ge 0 ]; then
+    echo "start with $ZBNUMFASTQ" 
+    sbatch --array=0-$ZBNUMFASTQ gridss.all_step.per_smp.sbatch
+fi
+
