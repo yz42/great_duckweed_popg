@@ -24,12 +24,16 @@ perl 02.CNVcaller.calling.get_run.pl 1
 sh 02.CNVcaller.calling.run_all.sh
 
 
+
+
 #CNVR detection
 module load  palma/2020b  GCCcore/10.2.0 GCC/10.2.0  SAMtools/1.11 Perl/5.32.0 Python/3.8.6 
 bash /home/y/ywang1/soft/CNVcaller/CNV.Discovery.sh \
 -l /scratch/tmp/ywang1/01.duckweed/popgenomics/SV/CNVcaller/RD_norm.list \
 -e /scratch/tmp/ywang1/01.duckweed/popgenomics/SV/CNVcaller/exclude_list \
 -f 0.025 -h 3 -r 0.15 -p primaryCNVR -m mergeCNVR
+
+
 
 
 #Genotyping

@@ -19,3 +19,6 @@ module load palma/2020b GCC/10.2.0 GCCcore/10.2.0 OpenMPI/4.0.5 util-linux/2.36 
 -nolow -norna -engine rmblast -parallel 10 \
 -dir /scratch/tmp/ywang1/01.duckweed/popgenomics/Repeat_anno \
 /scratch/tmp/xus/SP_pangenome/Refgenome/SP_combined.fasta
+
+#### convert RepeatMasker result to gff format by RepeatMasker.repeat_to_gff.pl (lettuce2020 github)
+/home/y/ywang1/soft/lettuce2020/01.genome.assembly/RepeatMasker.repeat_to_gff.pl /scratch/tmp/ywang1/01.duckweed/popgenomics/Repeat_anno/SP_combined.fasta.out

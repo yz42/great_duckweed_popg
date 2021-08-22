@@ -12,7 +12,7 @@
 #SBATCH -e lumpy.preprocess_%A_%a.err # Standard error
 
 
-module load  palma/2020b  GCC/10.2.0 SAMtools/1.11
+module load  palma/2020b  GCC/10.2.0 SAMtools/1.11 Java/11.0.2
 
 FILES=($(cat sort.bam.list))
 i=${FILES[$SLURM_ARRAY_TASK_ID]}
@@ -23,11 +23,18 @@ FILENAME=$(basename $k .bam)
 echo "$FILENAME"
 echo "$SLURM_ARRAY_TASK_ID"
 
+# Remove duplicates
+java -jar /home/y/ywang1/soft/picard/picard.jar MarkDuplicates \
+    REMOVE_DUPLICATES=true \
+    I=$i \
+    O=$i.RMDP.bam \
+    M=$i.RMDP_metrics.txt
+
 # Extract the discordant paired-end alignments.
-samtools view -b -F 1294 $i > $FILENAME.discordants.unsorted.bam
+samtools view -b -F 1294 $i.RMDP.bam > $FILENAME.discordants.unsorted.bam
 
 # Extract the split-read alignments
-samtools view -h $i \
+samtools view -h $i.RMDP.bam \
     | /home/y/ywang1/soft/lumpy-sv/scripts/extractSplitReads_BwaMem -i stdin \
     | samtools view -Sb - \
     > $FILENAME.splitters.unsorted.bam
