@@ -1,0 +1,45 @@
+#! /bin/bash
+
+# brkdc.calc_AF.sbatch
+
+#SBATCH --export=ALL               # Start with a clean environment
+#SBATCH --nodes=1                   # the number of nodes you want to reserve
+#SBATCH --ntasks-per-node=2      # the number of CPU cores per node
+#SBATCH --mem=16G                 # how much memory is needed per node (units can be: K, M, G, T)
+#SBATCH --partition=normal          # on which partition to submit the job
+#SBATCH --time=12:00:00             # the max wallclock time (time limit your job will run)
+#SBATCH --job-name=brkdc.calc_AF       # the name of your job
+#SBATCH -o ./out_err/brkdc.calc_AF_%A_%a.out # Standard output
+#SBATCH -e ./out_err/brkdc.calc_AF_%A_%a.err # Standard error
+
+module load palma/2020b  GCC/10.2.0 SAMtools/1.11 Perl/5.32.0
+
+
+FILES=($(cat chr.list))
+i=${FILES[$SLURM_ARRAY_TASK_ID]}
+# FILENAME=${j%%.*} 
+
+echo "file: $i"
+echo "array ID: $SLURM_ARRAY_TASK_ID"
+mkdir -p $i
+
+
+perl /home/y/ywang1/soft/breakdown/BreakDown.pl -S 100000 -s 50 \
+-F /scratch/tmp/ywang1/01.duckweed/popgenomics/ref/SP_combined.fasta \
+-c $i -d ./$i \
+RMDP.bam.list.config \
+/scratch/tmp/ywang1/01.duckweed/popgenomics/SV/Breakdancer/sep_chr/breakdancer.228all.20chr_merged.h.out 
+
+
+
+
+FILES=($(cat chr.list))
+# get size of array
+NUMFASTQ=${#FILES[@]}
+# now subtract 1 as we have to use zero-based indexing (first cell is 0)
+ZBNUMFASTQ=$(($NUMFASTQ - 1))
+# now submit to SLURM
+if [ $ZBNUMFASTQ -ge 0 ]; then
+    echo "start with $ZBNUMFASTQ" 
+    sbatch --array=0-$ZBNUMFASTQ brkdc.calc_AF.sbatch
+fi

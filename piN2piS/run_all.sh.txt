@@ -1,0 +1,63 @@
+all_vcf="/scratch/tmp/ywang1/01.duckweed/popgenomics/neutral_stat/split_chr.mask_SV/SP_228.basic_set.snp.recode.rm_cluster3-10.0missing.mask_SV.vcf"
+ref_dir="/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/split_by_chr/chr"
+gtf_dir="/scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/MAKER_chunck_split.0/rnd2_maker.with_2legacy/Sp_rnd2.maker.with_2legacy.maker.output/SpGA2022.1/gtf"
+# mkdir -p split_pop; cp ../backup_file/split_pop/*.list ./split_pop ; cp ../backup_file/split.sh .; 
+# sh split.sh $all_vcf
+# for i in `cat dir.list`; do mkdir -p $i ; done
+# for i in `cat dir.list`; do rm ./$i/*.vcf ; done
+
+dir_array=("68" "AME" "ASIA" "EUR" "IND" "basic_set.snp")
+dir_array1=("68" "AME" "ASIA" "EUR" "IND")
+
+mkdir -p split_pop
+for i in ${dir_array[@]}; do mkdir -p ./split_pop/$i ; done
+#extract 
+module load  palma/2019a  GCC/8.2.0-2.31.1 BCFtools/1.9
+for i in ${dir_array1[@]}; do  bcftools view $all_vcf -Ov -S ../backup_file/$i.list -o ./split_pop/$i/SP228.basic_set.rmCluster.0miss.maskSV.$i.vcf 2> bcftools.split.$i.log & done
+rm ./split_pop/pop_split_vcf.list
+for i in ${dir_array1[@]}; do  echo "./split_pop/$i/SP228.basic_set.rmCluster.0miss.maskSV.$i.vcf" >> ./split_pop/pop_split_vcf.list ; done 
+ln -s $all_vcf ./split_pop/basic_set.snp/SP228.basic_set.rmCluster.0miss.maskSV.all.vcf
+echo "./split_pop/basic_set.snp/SP228.basic_set.rmCluster.0miss.maskSV.all.vcf" >> ./split_pop/pop_split_vcf.list
+
+############################################wait until the last step is finish
+
+module load palma/2019a  GCC/8.2.0-2.31.1 HTSlib/1.9
+for i in `cat ./split_pop/pop_split_vcf.list`; do
+        dir=${i%/*}
+        VCF=$i
+        VCFGZ="${VCF}.gz"  # get basename and add .gz compression extension
+        echo "path: $dir"
+        echo "vcf: $VCF"
+        echo "vcfgz: $VCFGZ"
+        bgzip -c $VCF > $VCFGZ  #compress vcf
+        tabix -p vcf $VCFGZ  # index compressed vcf
+        tabix --list-chroms $VCFGZ > $dir/chromosomes.txt  # save all the chromosome names into a file
+
+        while IFS= read -r line; do
+                 mkdir -p $dir/$line
+                 tabix -h $VCFGZ $line > $dir/$line/$line.vcf
+        done < $dir/chromosomes.txt  # make an individual vcf for each chromosome
+done
+
+############################################wait until the last step is finish
+
+cp ../backup_file/get_sbatch_run.vcftools.pl ../backup_file/get_sbatch_run.snpgenie.pl ./split_pop/
+cd ./split_pop/; perl ./get_sbatch_run.vcftools.pl 1 ; perl ./get_sbatch_run.snpgenie.pl $ref_dir $gtf_dir
+sh snpgenie.all_run.list.sh ; sh vcftools.all_run.list.sh
+
+############################################wait until the last step is finish
+
+############################################results process 1) population-wide pi and piN/piS stats
+#/scratch/tmp/ywang1/01.duckweed/popgenomics/neutral_stat/split_chr.mask_SV/split_pop/dealing_res
+module load  palma/2020a  GCCcore/9.3.0 Perl/5.30.2
+perl dealing_Res.pl list
+#list:
+# /scratch/tmp/ywang1/01.duckweed/popgenomics/neutral_stat/split_chr.mask_SV/split_pop/ASIA/ChrS16/SNPGenie_Results/population_summary.txt
+# /scratch/tmp/ywang1/01.duckweed/popgenomics/neutral_stat/split_chr.mask_SV/split_pop/ASIA/ChrS11/SNPGenie_Results/population_summary.txt
+# /scratch/tmp/ywang1/01.duckweed/popgenomics/neutral_stat/split_chr.mask_SV/split_pop/ASIA/ChrS18/SNPGenie_Results/population_summary.txt
+
+############################################results process 2) sliding windows scanning of piN/piS
+#run.sh
+#/home/wangyz/project/02.duckweed_popg/normal_stat
+
+./count_pi_dens.sw.pl /home/wangyz/project/02.duckweed_popg/normal_stat/4_copy/chromosomes.txt /home/wangyz/sciebo/PopulationGenomics_duckweed/circos_plot/ref/fa.split_chr/ /mnt/e/project/02.duckweed_popg/normal_stat/4_copy pi_out

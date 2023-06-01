@@ -1,0 +1,119 @@
+#! /bin/bash
+# Sp.RNA-align.sort.sbatch
+
+#SBATCH --export=ALL               # Start with a clean environment
+#SBATCH --nodes=1                   # the number of nodes you want to reserve
+#SBATCH --ntasks-per-node=8        # the number of CPU cores per node
+#SBATCH --mem=32G                 # how much memory is needed per node (units can be: K, M, G, T)
+#SBATCH --partition=normal          # on which partition to submit the job
+#SBATCH --time=24:00:00             # the max wallclock time (time limit your job will run)
+#SBATCH --job-name=Sp.RNA-align.sort       # the name of your job
+#SBATCH -o ./log_err/Sp.RNA-align.sort_%A_%a.out # Standard output
+#SBATCH -e ./log_err/Sp.RNA-align.sort_%A_%a.err # Standard error
+
+module load palma/2019b  GCC/8.3.0  OpenMPI/3.1.4 HISAT2/2.2.1 SAMtools/1.10 
+
+FILES=($(cat smp.path.list))
+i=${FILES[$SLURM_ARRAY_TASK_ID]}
+FILENAME=$(basename $r )
+
+echo "$iILENAME"
+echo "$SLURM_ARRAY_TASK_ID"
+
+hisat2 -x /scratch/tmp/ywang1/01.duckweed/popgenomics/ref/SP_combined.hisat -1 ${i}-trimmed-pair1.fastq.gz -2  ${i}-trimmed-pair2.fastq.gz -p 24 --dta | samtools view -Sb -  | samtools sort -O BAM - -o /scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/running/$iILENAME.sort.bam
+samtools index /scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/running/$iILENAME.sort.bam
+
+
+
+
+FILES=($(cat smp.path.list))
+# get size of array
+NUMFASTQ=${#FILES[@]}
+# now subtract 1 as we have to use zero-based indexing (first cell is 0)
+ZBNUMFASTQ=$(($NUMFASTQ - 1))
+# now submit to SLURM
+if [ $ZBNUMFASTQ -ge 0 ]; then
+    echo "start with $ZBNUMFASTQ"
+    sbatch --array=0-$ZBNUMFASTQ Sp.RNA-align.sort.sbatch
+fi
+
+#######################################################################################################################################
+
+#! /bin/bash
+# Sp.RNA-align.sort.sbatch
+
+#SBATCH --export=ALL               # Start with a clean environment
+#SBATCH --nodes=1                   # the number of nodes you want to reserve
+#SBATCH --ntasks-per-node=24        # the number of CPU cores per node
+#SBATCH --mem=32G                 # how much memory is needed per node (units can be: K, M, G, T)
+#SBATCH --partition=normal          # on which partition to submit the job
+#SBATCH --time=48:00:00             # the max wallclock time (time limit your job will run)
+#SBATCH --job-name=./Sp.RNA-align_test       # the name of your job
+#SBATCH -o ./Sp.RNA-align_test.out # Standard output
+#SBATCH -e ./Sp.RNA-align_test.err # Standard error
+
+module load palma/2019b  GCC/8.3.0  OpenMPI/3.1.4 HISAT2/2.2.1 SAMtools/1.10 
+
+
+#/scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/fq
+#S-polyrhiza-mature-root-3_S61_L002_R1_001.fastq.gz
+#S-polyrhiza-mature-frond-3_S66_L002_R1_001.fastq.gz
+#S-polyrhiza-meristem-zone-3_S70_L003_R1_001.fastq.gz
+
+#/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/9509V3/JCVI/Sp9509_hisat2_index
+#/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/S.intermidia/Si7747_hisat_index
+
+
+i="/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/9509V3/JCVI/Sp9509_hisat2_index"
+r="S-polyrhiza-mature-root-3_S61_L002_R1_001.fastq.gz"
+o=$(basename $i)
+echo "ref: $(basename $i)"
+echo "read: $r"
+
+hisat2 -x $i -U //scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/fq/$r -p 24 --dta | samtools view -Sb -  | samtools sort -O BAM - -o /scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/test_bam/${o}.$r.sort.bam
+
+
+i="/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/9509V3/JCVI/Sp9509_hisat2_index"
+r="S-polyrhiza-mature-frond-3_S66_L002_R1_001.fastq.gz"
+o=$(basename $i)
+echo "ref: $(basename $i)"
+echo "read: $r"
+
+hisat2 -x $i -U //scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/fq/$r -p 24 --dta | samtools view -Sb -  | samtools sort -O BAM - -o /scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/test_bam/${o}.$r.sort.bam
+
+
+i="/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/9509V3/JCVI/Sp9509_hisat2_index"
+r="S-polyrhiza-meristem-zone-3_S70_L003_R1_001.fastq.gz"
+o=$(basename $i)
+echo "ref: $(basename $i)"
+echo "read: $r"
+
+hisat2 -x $i -U //scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/fq/$r -p 24 --dta | samtools view -Sb -  | samtools sort -O BAM - -o /scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/test_bam/${o}.$r.sort.bam
+
+
+i="/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/S.intermidia/Si7747_hisat_index"
+r="S-polyrhiza-mature-root-3_S61_L002_R1_001.fastq.gz"
+o=$(basename $i)
+echo "ref: $(basename $i)"
+echo "read: $r"
+
+hisat2 -x $i -U //scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/fq/$r -p 24 --dta | samtools view -Sb -  | samtools sort -O BAM - -o /scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/test_bam/${o}.$r.sort.bam
+
+
+i="/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/S.intermidia/Si7747_hisat_index"
+r="S-polyrhiza-mature-frond-3_S66_L002_R1_001.fastq.gz"
+o=$(basename $i)
+echo "ref: $(basename $i)"
+echo "read: $r"
+
+hisat2 -x $i -U //scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/fq/$r -p 24 --dta | samtools view -Sb -  | samtools sort -O BAM - -o /scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/test_bam/${o}.$r.sort.bam
+
+
+
+i="/scratch/tmp/ywang1/01.duckweed/popgenomics/ref/S.intermidia/Si7747_hisat_index"
+r="S-polyrhiza-meristem-zone-3_S70_L003_R1_001.fastq.gz"
+o=$(basename $i)
+echo "ref: $(basename $i)"
+echo "read: $r"
+
+hisat2 -x $i -U //scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/fq/$r -p 24 --dta | samtools view -Sb -  | samtools sort -O BAM - -o /scratch/tmp/ywang1/01.duckweed/popgenomics/RNA_data/fq/tony/test_bam/${o}.$r.sort.bam
